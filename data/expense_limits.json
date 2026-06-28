@@ -1,0 +1,77 @@
+{
+  "currency": "INR",
+  "domestic": {
+    "hotel": {
+      "limit_type": "per_night",
+      "max_amount": 8000,
+      "requires_number_of_nights": true,
+      "policy_reference": "POL-005"
+    },
+    "meals": {
+      "limit_type": "per_day",
+      "max_amount": 1500,
+      "requires_number_of_days": false,
+      "assumption": "each_expense_line_represents_one_day",
+      "policy_reference": "POL-005"
+    },
+    "taxi": {
+      "limit_type": "per_day",
+      "max_amount": 3000,
+      "requires_number_of_days": false,
+      "assumption": "each_expense_line_represents_one_day",
+      "policy_reference": "POL-005"
+    },
+    "train": {
+      "limit_type": "actual_with_receipt",
+      "max_amount": null,
+      "policy_reference": "POL-005"
+    },
+    "flight": {
+      "limit_type": "economy_only",
+      "max_amount": null,
+      "policy_reference": "POL-005"
+    },
+    "conference": {
+      "limit_type": "actual_with_receipt",
+      "max_amount": null,
+      "policy_reference": "POL-005"
+    }
+  },
+  "international": {
+    "hotel": {
+      "limit_type": "per_night",
+      "max_amount": 18000,
+      "requires_number_of_nights": true,
+      "policy_reference": "POL-006"
+    },
+    "meals": {
+      "limit_type": "per_day",
+      "max_amount": 3500,
+      "requires_number_of_days": false,
+      "assumption": "each_expense_line_represents_one_day",
+      "policy_reference": "POL-006"
+    },
+    "taxi": {
+      "limit_type": "per_day",
+      "max_amount": 6000,
+      "requires_number_of_days": false,
+      "assumption": "each_expense_line_represents_one_day",
+      "policy_reference": "POL-006"
+    },
+    "train": {
+      "limit_type": "actual_with_receipt",
+      "max_amount": null,
+      "policy_reference": "POL-006"
+    },
+    "flight": {
+      "limit_type": "economy_only",
+      "max_amount": null,
+      "policy_reference": "POL-006"
+    },
+    "conference": {
+      "limit_type": "actual_with_receipt",
+      "max_amount": null,
+      "policy_reference": "POL-006"
+    }
+  }
+}

@@ -1,0 +1,197 @@
+[
+  {
+    "claim_id": "CLM-001",
+    "employee_id": "EMP-101",
+    "employee_name": "Amit Sharma",
+    "travel_type": "domestic",
+    "origin_country": "India",
+    "destination_country": "India",
+    "business_purpose": "Client meeting in Bangalore",
+    "start_date": "2026-06-10",
+    "end_date": "2026-06-11",
+    "expenses": [
+      {
+        "expense_id": "EXP-001",
+        "date": "2026-06-10",
+        "category": "flight",
+        "vendor": "Indigo Airlines",
+        "amount": 9500,
+        "receipt_id": "RCP-1001",
+        "travel_class": "economy"
+      },
+      {
+        "expense_id": "EXP-002",
+        "date": "2026-06-10",
+        "category": "hotel",
+        "vendor": "Taj Business Hotel",
+        "amount": 7000,
+        "receipt_id": "RCP-1002",
+        "number_of_nights": 1
+      },
+      {
+        "expense_id": "EXP-003",
+        "date": "2026-06-11",
+        "category": "meals",
+        "vendor": "Office Cafe",
+        "amount": 1200,
+        "receipt_id": "RCP-1003"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM-002",
+    "employee_id": "EMP-102",
+    "employee_name": "Neha Gupta",
+    "travel_type": "domestic",
+    "origin_country": "India",
+    "destination_country": "India",
+    "business_purpose": "Partner workshop in Mumbai",
+    "start_date": "2026-06-12",
+    "end_date": "2026-06-13",
+    "expenses": [
+      {
+        "expense_id": "EXP-004",
+        "date": "2026-06-12",
+        "category": "taxi",
+        "vendor": "City Cab Services",
+        "amount": 4200,
+        "receipt_id": "RCP-1004"
+      },
+      {
+        "expense_id": "EXP-005",
+        "date": "2026-06-12",
+        "category": "meals",
+        "vendor": "Mumbai Business Cafe",
+        "amount": 1800,
+        "receipt_id": "RCP-1005"
+      },
+      {
+        "expense_id": "EXP-006",
+        "date": "2026-06-13",
+        "category": "alcohol",
+        "vendor": "Airport Lounge Bar",
+        "amount": 2500,
+        "receipt_id": "RCP-1006"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM-003",
+    "employee_id": "EMP-103",
+    "employee_name": "Ravi Kumar",
+    "travel_type": "domestic",
+    "origin_country": "India",
+    "destination_country": "India",
+    "business_purpose": "Team offsite travel",
+    "start_date": "2026-06-14",
+    "end_date": "2026-06-14",
+    "expenses": [
+      {
+        "expense_id": "EXP-007",
+        "date": "2026-06-14",
+        "category": "alcohol",
+        "vendor": "Hotel Bar",
+        "amount": 3200,
+        "receipt_id": "RCP-1007"
+      },
+      {
+        "expense_id": "EXP-008",
+        "date": "2026-06-14",
+        "category": "personal shopping",
+        "vendor": "Airport Retail Store",
+        "amount": 4500,
+        "receipt_id": "RCP-1008"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM-004",
+    "employee_id": "EMP-104",
+    "employee_name": "Priya Menon",
+    "travel_type": "domestic",
+    "origin_country": "India",
+    "destination_country": "India",
+    "business_purpose": "Sales meeting in Delhi",
+    "start_date": "2026-06-15",
+    "end_date": "2026-06-17",
+    "expenses": [
+      {
+        "expense_id": "EXP-009",
+        "date": "2026-06-15",
+        "category": "hotel",
+        "vendor": "Delhi Business Hotel",
+        "amount": 18000,
+        "receipt_id": "RCP-1009"
+      },
+      {
+        "expense_id": "EXP-010",
+        "date": "2026-06-15",
+        "category": "flight",
+        "vendor": "Air India",
+        "amount": 13500,
+        "receipt_id": "RCP-1010"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM-005",
+    "employee_id": "EMP-101",
+    "employee_name": "Amit Sharma",
+    "travel_type": "domestic",
+    "origin_country": "India",
+    "destination_country": "India",
+    "business_purpose": "Duplicate submission for Bangalore client meeting",
+    "start_date": "2026-06-10",
+    "end_date": "2026-06-11",
+    "expenses": [
+      {
+        "expense_id": "EXP-011",
+        "date": "2026-06-10",
+        "category": "flight",
+        "vendor": "Indigo Airlines",
+        "amount": 9500,
+        "receipt_id": "RCP-1001",
+        "travel_class": "economy"
+      }
+    ]
+  },
+  {
+    "claim_id": "CLM-006",
+    "employee_id": "EMP-106",
+    "employee_name": "Shivaji Chatterjee",
+    "travel_type": "domestic",
+    "origin_country": "India",
+    "destination_country": "India",
+    "business_purpose": "AI Developer client assessment and project discussion",
+    "start_date": "2026-06-20",
+    "end_date": "2026-06-22",
+    "expenses": [
+      {
+        "expense_id": "EXP-012",
+        "date": "2026-06-20",
+        "category": "train",
+        "vendor": "IRCTC",
+        "amount": 3500,
+        "receipt_id": "RCP-1011"
+      },
+      {
+        "expense_id": "EXP-013",
+        "date": "2026-06-20",
+        "category": "flight",
+        "vendor": "Indigo Airlines",
+        "amount": 12500,
+        "receipt_id": "RCP-1012",
+        "travel_class": "economy"
+      },
+      {
+        "expense_id": "EXP-014",
+        "date": "2026-06-20",
+        "category": "hotel",
+        "vendor": "Hyderabad Business Hotel",
+        "amount": 18000,
+        "receipt_id": "RCP-1013",
+        "number_of_nights": 2
+      }
+    ]
+  }
+]

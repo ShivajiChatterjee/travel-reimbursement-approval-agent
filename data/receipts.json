@@ -1,0 +1,106 @@
+[
+  {
+    "receipt_id": "RCP-1001",
+    "vendor": "Indigo Airlines",
+    "date": "2026-06-10",
+    "amount": 9500,
+    "category": "flight",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1002",
+    "vendor": "Taj Business Hotel",
+    "date": "2026-06-10",
+    "amount": 7000,
+    "category": "hotel",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1003",
+    "vendor": "Office Cafe",
+    "date": "2026-06-11",
+    "amount": 1200,
+    "category": "meals",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1004",
+    "vendor": "City Cab Services",
+    "date": "2026-06-12",
+    "amount": 4200,
+    "category": "taxi",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1005",
+    "vendor": "Mumbai Business Cafe",
+    "date": "2026-06-12",
+    "amount": 1800,
+    "category": "meals",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1006",
+    "vendor": "Airport Lounge Bar",
+    "date": "2026-06-13",
+    "amount": 2500,
+    "category": "alcohol",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1007",
+    "vendor": "Hotel Bar",
+    "date": "2026-06-14",
+    "amount": 3200,
+    "category": "alcohol",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1008",
+    "vendor": "Airport Retail Store",
+    "date": "2026-06-14",
+    "amount": 4500,
+    "category": "personal shopping",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1009",
+    "vendor": "Delhi Business Hotel",
+    "date": "2026-06-15",
+    "amount": 18000,
+    "category": "hotel",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1010",
+    "vendor": "Air India",
+    "date": "2026-06-15",
+    "amount": 13500,
+    "category": "flight",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1011",
+    "vendor": "IRCTC",
+    "date": "2026-06-20",
+    "amount": 3500,
+    "category": "train",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1012",
+    "vendor": "Indigo Airlines",
+    "date": "2026-06-20",
+    "amount": 12500,
+    "category": "flight",
+    "attachment_available": true
+  },
+  {
+    "receipt_id": "RCP-1013",
+    "vendor": "Hyderabad Business Hotel",
+    "date": "2026-06-20",
+    "amount": 18000,
+    "category": "hotel",
+    "attachment_available": true
+  }
+]

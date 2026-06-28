@@ -1,0 +1,28 @@
+{
+  "approval_thresholds": [
+    {
+      "min_amount": 0,
+      "max_amount": 25000,
+      "approval_level": "manager",
+      "manual_review_required": false,
+      "policy_reference": "POL-009",
+      "description": "Claims up to INR 25,000 can be routed to the reporting manager."
+    },
+    {
+      "min_amount": 25001,
+      "max_amount": 100000,
+      "approval_level": "finance",
+      "manual_review_required": false,
+      "policy_reference": "POL-009",
+      "description": "Claims above INR 25,000 and up to INR 100,000 require finance approval."
+    },
+    {
+      "min_amount": 100001,
+      "max_amount": null,
+      "approval_level": "director",
+      "manual_review_required": true,
+      "policy_reference": "POL-009",
+      "description": "Claims above INR 100,000 require director approval and are routed to Manual Review in this prototype."
+    }
+  ]
+}
