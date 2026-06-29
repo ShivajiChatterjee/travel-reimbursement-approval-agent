@@ -1,9 +1,159 @@
 {
+  "saved_at": "2026-06-29T18:05:33",
+  "source": "FastAPI UI/API evaluation",
+  "saved_output_path": "sample_outputs\\clm-006_partially_approve.json",
+  "planning_llm_used": true,
+  "policy_reasoning_llm_used": true,
+  "final_llm_used": true,
+  "llm_used": true,
   "gemini_status": {
     "planning_llm": "WORKING",
     "policy_reasoning_llm": "WORKING",
-    "final_llm": "WORKING"
+    "final_llm": "WORKING",
+    "overall": "WORKING"
   },
+  "ui_display": {
+    "final_reimbursement_recommendation": "The claim is partially approved as the hotel expense exceeded the domestic travel limit. The train expense (EXP-012) is approved for INR 3500.0, and the flight expense (EXP-013) is approved for INR 12500.0. The hotel expense (EXP-014) was partially approved for INR 16000.0, with INR 2000.0 rejected due to the INR 8000 per night limit (POL-005). The total approved amount is INR 32000.0, requiring finance approval (POL-009).",
+    "agent_workflow_summary": [
+      {
+        "step": 1,
+        "stage": "Gemini Tool Planning",
+        "owner": "Gemini",
+        "description": "Reads the claim and decides which reimbursement tools are required."
+      },
+      {
+        "step": 2,
+        "stage": "Python Tool Plan Validation",
+        "owner": "Python",
+        "description": "Validates the selected tools and ensures mandatory checks are not skipped."
+      },
+      {
+        "step": 3,
+        "stage": "Gemini Policy Reasoning",
+        "owner": "Gemini",
+        "description": "Maps each expense line to the relevant travel policy rules."
+      },
+      {
+        "step": 4,
+        "stage": "Python Deterministic Calculation",
+        "owner": "Python",
+        "description": "Checks receipts, duplicates, eligibility, limits, approved amount, rejected amount, and approval routing."
+      },
+      {
+        "step": 5,
+        "stage": "Gemini Final Recommendation",
+        "owner": "Gemini",
+        "description": "Uses the policy reasoning and Python-calculated evidence to generate the final reimbursement recommendation."
+      }
+    ],
+    "llm_planning_summary": "The selected tools will be used to look up policy details, validate travel type, check receipt completeness, determine expense eligibility, detect duplicates, calculate limits, and determine the approval threshold for the reimbursement claim.",
+    "policy_reasoning_summary": "The claim consists of domestic travel expenses for train, flight, and hotel. All expense categories are eligible. Receipts are required for all expenses as they exceed INR 500. Domestic travel limits will be checked for hotel and flight. Duplicate claim check will be performed at the claim level. The claim amount will be evaluated against approval thresholds.",
+    "decision": "Partially Approve",
+    "approval_level": "finance",
+    "submitted_amount": 34000.0,
+    "approved_amount": 32000.0,
+    "rejected_amount": 2000.0,
+    "reason_codes": [
+      "HOTEL_LIMIT_EXCEEDED"
+    ],
+    "manual_review_reasons": [],
+    "policy_references": [
+      "POL-001",
+      "POL-002",
+      "POL-003",
+      "POL-005",
+      "POL-007",
+      "POL-009",
+      "POL-010",
+      "POL-011",
+      "POL-008",
+      "POL-012",
+      "POL-004"
+    ]
+  },
+  "llm_policy_reasoning": {
+    "claim_id": "CLM-006",
+    "expense_policy_matches": [
+      {
+        "expense_id": "EXP-012",
+        "category": "train",
+        "applicable_policy_ids": [
+          "POL-001",
+          "POL-002",
+          "POL-003",
+          "POL-005"
+        ],
+        "policy_reasoning": "This is a domestic train expense. POL-001 applies for travel eligibility. POL-002 applies for receipt requirements as the amount is above INR 500. POL-003 applies as train is an eligible category. POL-005 applies for domestic travel limits.",
+        "decision_signal": "receipt_check_required",
+        "requires_calculation": true,
+        "manual_review_required": false,
+        "risk_flags": [],
+        "confidence": 1.0
+      },
+      {
+        "expense_id": "EXP-013",
+        "category": "flight",
+        "applicable_policy_ids": [
+          "POL-001",
+          "POL-002",
+          "POL-003",
+          "POL-005",
+          "POL-007"
+        ],
+        "policy_reasoning": "This is a domestic economy flight expense. POL-001 applies for travel eligibility. POL-002 applies for receipt requirements as the amount is above INR 500. POL-003 applies as flight is an eligible category. POL-005 applies for domestic travel limits. POL-007 applies as it is a flight expense.",
+        "decision_signal": "receipt_check_required",
+        "requires_calculation": true,
+        "manual_review_required": false,
+        "risk_flags": [],
+        "confidence": 1.0
+      },
+      {
+        "expense_id": "EXP-014",
+        "category": "hotel",
+        "applicable_policy_ids": [
+          "POL-001",
+          "POL-002",
+          "POL-003",
+          "POL-005"
+        ],
+        "policy_reasoning": "This is a domestic hotel expense. POL-001 applies for travel eligibility. POL-002 applies for receipt requirements as the amount is above INR 500. POL-003 applies as hotel is an eligible category. POL-005 applies for domestic travel limits. The number of nights is provided, so no manual review is needed for this field.",
+        "decision_signal": "receipt_check_required",
+        "requires_calculation": true,
+        "manual_review_required": false,
+        "risk_flags": [],
+        "confidence": 1.0
+      }
+    ],
+    "claim_level_policy_ids": [
+      "POL-009",
+      "POL-010",
+      "POL-011",
+      "POL-008"
+    ],
+    "missing_or_conflicting_info": [],
+    "overall_reasoning": "The claim consists of domestic travel expenses for train, flight, and hotel. All expense categories are eligible. Receipts are required for all expenses as they exceed INR 500. Domestic travel limits will be checked for hotel and flight. Duplicate claim check will be performed at the claim level. The claim amount will be evaluated against approval thresholds.",
+    "confidence": 1.0
+  },
+  "policy_reasoning_error": "",
+  "tools_selected_by_llm": [
+    "policy_lookup_tool",
+    "travel_type_validation_tool",
+    "receipt_completeness_tool",
+    "expense_eligibility_tool",
+    "duplicate_claim_detector_tool",
+    "limit_checker_tool",
+    "approval_threshold_tool"
+  ],
+  "tools_executed": [
+    "policy_lookup_tool",
+    "travel_type_validation_tool",
+    "receipt_completeness_tool",
+    "expense_eligibility_tool",
+    "duplicate_claim_detector_tool",
+    "limit_checker_tool",
+    "approval_threshold_tool"
+  ],
+  "safety_added_tools": [],
   "result": {
     "claim_id": "CLM-006",
     "employee_id": "EMP-106",
@@ -20,16 +170,16 @@
       "POL-002",
       "POL-003",
       "POL-005",
-      "POL-008",
       "POL-007",
       "POL-009",
       "POL-010",
       "POL-011",
+      "POL-008",
       "POL-012",
       "POL-004"
     ],
-    "confidence": 0.95,
-    "explanation": "The claim CLM-006 for Shivaji Chatterjee is partially approved for INR 32,000. Expense EXP-012 (train) for INR 3,500 and EXP-013 (flight) for INR 12,500 are fully approved as per POL-005 and POL-007, respectively. Expense EXP-014 (hotel) for INR 18,000 is partially approved for INR 16,000, with INR 2,000 rejected, due to exceeding the domestic hotel limit of INR 8,000 per night for 2 nights (POL-005). The total approved amount of INR 32,000 requires finance approval as per POL-009.",
+    "confidence": 1.0,
+    "explanation": "The claim is partially approved as the hotel expense exceeded the domestic travel limit. The train expense (EXP-012) is approved for INR 3500.0, and the flight expense (EXP-013) is approved for INR 12500.0. The hotel expense (EXP-014) was partially approved for INR 16000.0, with INR 2000.0 rejected due to the INR 8000 per night limit (POL-005). The total approved amount is INR 32000.0, requiring finance approval (POL-009).",
     "reason_codes": [
       "HOTEL_LIMIT_EXCEEDED"
     ],
@@ -46,8 +196,7 @@
           "POL-001",
           "POL-002",
           "POL-003",
-          "POL-005",
-          "POL-008"
+          "POL-005"
         ]
       },
       {
@@ -63,8 +212,7 @@
           "POL-002",
           "POL-003",
           "POL-005",
-          "POL-007",
-          "POL-008"
+          "POL-007"
         ]
       },
       {
@@ -79,8 +227,7 @@
           "POL-001",
           "POL-002",
           "POL-003",
-          "POL-005",
-          "POL-008"
+          "POL-005"
         ]
       }
     ],
@@ -114,7 +261,7 @@
       ],
       "skipped_by_llm_added_by_python": [],
       "missing_or_conflicting_info": [],
-      "planning_summary": "All seven tools are selected to ensure a comprehensive evaluation of the travel reimbursement claim, covering policy adherence, travel type validation, receipt verification, expense eligibility, duplicate detection, amount calculation, and approval routing determination.",
+      "planning_summary": "The selected tools will be used to look up policy details, validate travel type, check receipt completeness, determine expense eligibility, detect duplicates, calculate limits, and determine the approval threshold for the reimbursement claim.",
       "safety_note": "Gemini proposed the tool plan. Python validated the plan and added any mandatory reimbursement controls that Gemini skipped."
     },
     "tools_called": [
@@ -129,11 +276,11 @@
             "POL-002": "## POL-002: Receipt Requirement\n\nReceipts are mandatory for any individual expense greater than INR 500.\n\nA valid receipt must include:\n- Receipt ID\n- Vendor name\n- Transaction date\n- Amount\n- Expense category\n- Attachment availability\n\nIf a required receipt is missing, unclear, mismatched, or the receipt attachment is unavailable, the claim should be routed to Manual Review.\n\nExpenses of INR 500 or below may be reimbursed without a receipt if the expense category is eligible and the business purpose is valid.\n\n---",
             "POL-003": "## POL-003: Eligible Expense Categories\n\nThe following categories are eligible for reimbursement:\n- flight\n- hotel\n- meals\n- taxi\n- train\n- conference\n\nExpenses outside these categories are not reimbursable unless explicitly approved.\n\n---",
             "POL-005": "## POL-005: Domestic Travel Limits\n\nFor domestic travel, the following limits apply:\n\n- hotel: INR 8,000 per night\n- meals: INR 1,500 per day\n- taxi: INR 3,000 per day\n- train: Actual amount with valid receipt\n- flight: Economy class only\n- conference: Actual registration cost with valid receipt and business justification\n\nHotel limits apply per night.\n\nMulti-night hotel claims should either be itemized per night or include the number of nights.\n\nIf the number of nights is missing for a hotel claim, the claim should be routed to Manual Review.\n\nFor this prototype, each meals and taxi expense line is treated as a single day's expense for limit calculation.\n\nExpenses above the allowed category limit may be partially approved up to the policy limit.\n\n---",
-            "POL-008": "## POL-008: Duplicate Claim Rule\n\nIf a claim has the same employee ID, expense date, vendor, category, and amount as an earlier submitted claim, it should be treated as a duplicate.\n\nDuplicate claims must be rejected.\n\nIf only some expense lines are duplicate, those duplicate expense lines should be rejected and the remaining valid expense lines may still be evaluated.\n\n---",
             "POL-007": "## POL-007: Flight Class Rule\n\nOnly economy-class flight tickets are reimbursable by default.\n\nBusiness-class, premium-economy, or first-class tickets require prior approval.\n\nIf the class of travel is missing for a flight claim, the claim should be routed to Manual Review.\n\nIf the flight class is business, premium-economy, or first-class and no prior approval is available, the claim should be routed to Manual Review.\n\n---",
             "POL-009": "## POL-009: Approval Thresholds\n\nClaims up to INR 25,000 may be approved by the reporting manager.\n\nClaims above INR 25,000 and up to INR 100,000 require finance approval.\n\nClaims above INR 100,000 require director approval.\n\nFinance approval and manager approval are internal routing steps. The agent should still return Approve or Partially Approve for eligible claims within these thresholds, while noting the required approval level in the explanation.\n\nIn this prototype, claims above INR 100,000 should be routed to Manual Review.\n\n---",
             "POL-010": "## POL-010: Decision Rules\n\nA claim should be marked as Approve when:\n- All expenses are eligible\n- Required receipts are complete\n- Amounts are within policy limits\n- No duplicate claim is detected\n- No manual approval exception is needed\n\nA claim should be marked as Partially Approve when:\n- Some expenses exceed category limits\n- Some expense lines are non-reimbursable\n- Some expense lines are duplicates\n- The remaining valid expenses can still be reimbursed\n\nA claim should be marked as Reject when:\n- The claim is duplicate\n- All expense lines are non-reimbursable\n- The claim violates core reimbursement rules\n- No amount is eligible for reimbursement\n\nA claim should be marked as Manual Review when:\n- Required information is missing\n- Receipt evidence is incomplete\n- Receipt details are mismatched\n- Travel type is missing or unclear\n- Hotel claim does not specify number of nights\n- Travel class is missing for flight claims\n- Prior approval exception is required\n- Claim amount is above INR 100,000\n- Policy conflict or uncertainty exists\n\n---",
             "POL-011": "## POL-011: Approved and Rejected Amount Calculation\n\nThe approved amount should include only the reimbursable amount allowed under policy.\n\nThe rejected amount should include:\n- Non-reimbursable expense amounts\n- Amounts above category limits\n- Duplicate expense amounts\n- Expense amounts rejected due to policy violation\n\nFor partially approved claims, the approved amount and rejected amount must be clearly separated.\n\n---",
+            "POL-008": "## POL-008: Duplicate Claim Rule\n\nIf a claim has the same employee ID, expense date, vendor, category, and amount as an earlier submitted claim, it should be treated as a duplicate.\n\nDuplicate claims must be rejected.\n\nIf only some expense lines are duplicate, those duplicate expense lines should be rejected and the remaining valid expense lines may still be evaluated.\n\n---",
             "POL-012": "## POL-012: Confidence and Explanation\n\nThe agent should provide a confidence score between 0 and 1.\n\nHigh confidence should be used when:\n- Policy rules clearly apply\n- Required receipts are available\n- No conflicting information exists\n\nLower confidence should be used when:\n- Information is incomplete\n- Policy interpretation is uncertain\n- Manual review is required\n\nEach decision should include a short explanation and reference the relevant policy rule IDs."
           },
           "policy_reasoning": {
@@ -146,15 +293,14 @@
                   "POL-001",
                   "POL-002",
                   "POL-003",
-                  "POL-005",
-                  "POL-008"
+                  "POL-005"
                 ],
-                "policy_reasoning": "This is a domestic business travel expense. 'train' is an eligible category. The amount is above INR 500, requiring a receipt. Domestic travel limits apply, and train expenses are reimbursed at actuals with a valid receipt. Duplicate claim check is always applicable.",
-                "decision_signal": "limit_check_required",
+                "policy_reasoning": "This is a domestic train expense. POL-001 applies for travel eligibility. POL-002 applies for receipt requirements as the amount is above INR 500. POL-003 applies as train is an eligible category. POL-005 applies for domestic travel limits.",
+                "decision_signal": "receipt_check_required",
                 "requires_calculation": true,
                 "manual_review_required": false,
                 "risk_flags": [],
-                "confidence": 0.95
+                "confidence": 1.0
               },
               {
                 "expense_id": "EXP-013",
@@ -164,15 +310,14 @@
                   "POL-002",
                   "POL-003",
                   "POL-005",
-                  "POL-007",
-                  "POL-008"
+                  "POL-007"
                 ],
-                "policy_reasoning": "This is a domestic business travel expense. 'flight' is an eligible category. The amount is above INR 500, requiring a receipt. Domestic travel limits apply, specifically requiring economy class, which is stated. Flight class rules are directly applicable. Duplicate claim check is always applicable.",
-                "decision_signal": "limit_check_required",
+                "policy_reasoning": "This is a domestic economy flight expense. POL-001 applies for travel eligibility. POL-002 applies for receipt requirements as the amount is above INR 500. POL-003 applies as flight is an eligible category. POL-005 applies for domestic travel limits. POL-007 applies as it is a flight expense.",
+                "decision_signal": "receipt_check_required",
                 "requires_calculation": true,
                 "manual_review_required": false,
                 "risk_flags": [],
-                "confidence": 0.95
+                "confidence": 1.0
               },
               {
                 "expense_id": "EXP-014",
@@ -181,25 +326,25 @@
                   "POL-001",
                   "POL-002",
                   "POL-003",
-                  "POL-005",
-                  "POL-008"
+                  "POL-005"
                 ],
-                "policy_reasoning": "This is a domestic business travel expense. 'hotel' is an eligible category. The amount is above INR 500, requiring a receipt. Domestic travel limits apply for hotel per night, and the number of nights is provided for calculation. Duplicate claim check is always applicable.",
-                "decision_signal": "limit_check_required",
+                "policy_reasoning": "This is a domestic hotel expense. POL-001 applies for travel eligibility. POL-002 applies for receipt requirements as the amount is above INR 500. POL-003 applies as hotel is an eligible category. POL-005 applies for domestic travel limits. The number of nights is provided, so no manual review is needed for this field.",
+                "decision_signal": "receipt_check_required",
                 "requires_calculation": true,
                 "manual_review_required": false,
                 "risk_flags": [],
-                "confidence": 0.95
+                "confidence": 1.0
               }
             ],
             "claim_level_policy_ids": [
               "POL-009",
               "POL-010",
-              "POL-011"
+              "POL-011",
+              "POL-008"
             ],
             "missing_or_conflicting_info": [],
-            "overall_reasoning": "The claim is for domestic business travel with eligible expenses. All expenses require receipt validation and adherence to domestic category limits. The hotel expense specifies the number of nights, allowing for proper limit calculation. No immediate missing or conflicting information was identified.",
-            "confidence": 0.95
+            "overall_reasoning": "The claim consists of domestic travel expenses for train, flight, and hotel. All expense categories are eligible. Receipts are required for all expenses as they exceed INR 500. Domestic travel limits will be checked for hotel and flight. Duplicate claim check will be performed at the claim level. The claim amount will be evaluated against approval thresholds.",
+            "confidence": 1.0
           }
         },
         "policy_references": [
@@ -207,11 +352,11 @@
           "POL-002",
           "POL-003",
           "POL-005",
-          "POL-008",
           "POL-007",
           "POL-009",
           "POL-010",
           "POL-011",
+          "POL-008",
           "POL-012"
         ]
       },
@@ -265,8 +410,7 @@
                 "POL-001",
                 "POL-002",
                 "POL-003",
-                "POL-005",
-                "POL-008"
+                "POL-005"
               ]
             },
             {
@@ -279,8 +423,7 @@
                 "POL-002",
                 "POL-003",
                 "POL-005",
-                "POL-007",
-                "POL-008"
+                "POL-007"
               ]
             },
             {
@@ -292,8 +435,7 @@
                 "POL-001",
                 "POL-002",
                 "POL-003",
-                "POL-005",
-                "POL-008"
+                "POL-005"
               ]
             }
           ],
@@ -307,7 +449,6 @@
           "POL-002",
           "POL-003",
           "POL-005",
-          "POL-008",
           "POL-007",
           "POL-004"
         ]
@@ -344,7 +485,6 @@
           "POL-002",
           "POL-003",
           "POL-005",
-          "POL-008",
           "POL-007"
         ]
       },

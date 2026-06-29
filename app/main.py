@@ -1,3 +1,8 @@
+import json
+import re
+import time
+from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException, Query
@@ -66,6 +71,56 @@ def get_display_approval_level(result) -> str:
         return "Not required"
 
     return result.approval_level
+
+
+def save_evaluation_output(
+    response_data: Dict[str, Any],
+    claim_id: str,
+    decision: str,
+) -> str:
+    """
+    Saves one claim evaluation response as JSON inside sample_outputs/.
+
+    Example output filenames:
+    - sample_outputs/clm-001_approve.json
+    - sample_outputs/clm-002_partially_approve.json
+    - sample_outputs/clm-003_reject.json
+    - sample_outputs/clm-004_manual_review.json
+    """
+
+    output_dir = Path("sample_outputs")
+    output_dir.mkdir(exist_ok=True)
+
+    safe_claim_id = re.sub(
+        r"[^a-z0-9]+",
+        "-",
+        claim_id.lower(),
+    ).strip("-")
+
+    safe_decision = re.sub(
+        r"[^a-z0-9]+",
+        "_",
+        decision.lower(),
+    ).strip("_")
+
+    output_path = output_dir / f"{safe_claim_id}_{safe_decision}.json"
+
+    response_with_metadata = {
+        "saved_at": datetime.now().isoformat(timespec="seconds"),
+        "source": "FastAPI UI/API evaluation",
+        "saved_output_path": str(output_path),
+        **response_data,
+    }
+
+    with open(output_path, "w", encoding="utf-8") as file:
+        json.dump(
+            response_with_metadata,
+            file,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+    return str(output_path)
 
 
 def build_api_response(
@@ -256,6 +311,10 @@ def evaluate_sample_claim(
         default=False,
         description="Include raw Gemini planning, policy reasoning, and final response in API output.",
     ),
+    save_output: bool = Query(
+        default=True,
+        description="Save the evaluation response as a JSON file inside sample_outputs.",
+    ),
 ) -> Dict[str, Any]:
     try:
         claim = loader.get_claim_by_id(claim_id)
@@ -268,11 +327,21 @@ def evaluate_sample_claim(
     agent = create_agent(use_llm=use_llm)
     result = agent.evaluate_claim(claim)
 
-    return build_api_response(
+    response_data = build_api_response(
         result=result,
         agent=agent,
         include_raw_llm=include_raw_llm,
     )
+
+    if save_output:
+        saved_path = save_evaluation_output(
+            response_data=response_data,
+            claim_id=result.claim_id,
+            decision=result.decision,
+        )
+        response_data["saved_output_path"] = saved_path
+
+    return response_data
 
 
 @app.post("/evaluate")
@@ -286,15 +355,29 @@ def evaluate_custom_claim(
         default=False,
         description="Include raw Gemini planning, policy reasoning, and final response in API output.",
     ),
+    save_output: bool = Query(
+        default=True,
+        description="Save the evaluation response as a JSON file inside sample_outputs.",
+    ),
 ) -> Dict[str, Any]:
     agent = create_agent(use_llm=use_llm)
     result = agent.evaluate_claim(claim)
 
-    return build_api_response(
+    response_data = build_api_response(
         result=result,
         agent=agent,
         include_raw_llm=include_raw_llm,
     )
+
+    if save_output:
+        saved_path = save_evaluation_output(
+            response_data=response_data,
+            claim_id=result.claim_id,
+            decision=result.decision,
+        )
+        response_data["saved_output_path"] = saved_path
+
+    return response_data
 
 
 @app.get("/evaluate-all")
@@ -310,24 +393,52 @@ def evaluate_all_claims(
         default=False,
         description="Include raw Gemini responses for each claim.",
     ),
+    save_output: bool = Query(
+        default=True,
+        description="Save each claim evaluation response as JSON inside sample_outputs.",
+    ),
+    delay_seconds: float = Query(
+        default=5.0,
+        ge=0,
+        le=60,
+        description=(
+            "Delay between claims when evaluating all claims. "
+            "Useful when use_llm=true to avoid sending Gemini requests too quickly."
+        ),
+    ),
 ) -> Dict[str, Any]:
     agent = create_agent(use_llm=use_llm)
 
     results = []
+    total_claims = len(data["claims"])
 
-    for claim in data["claims"]:
+    for index, claim in enumerate(data["claims"]):
         result = agent.evaluate_claim(claim)
-        results.append(
-            build_api_response(
-                result=result,
-                agent=agent,
-                include_raw_llm=include_raw_llm,
-            )
+
+        response_data = build_api_response(
+            result=result,
+            agent=agent,
+            include_raw_llm=include_raw_llm,
         )
+
+        if save_output:
+            saved_path = save_evaluation_output(
+                response_data=response_data,
+                claim_id=result.claim_id,
+                decision=result.decision,
+            )
+            response_data["saved_output_path"] = saved_path
+
+        results.append(response_data)
+
+        if use_llm and delay_seconds > 0 and index < total_claims - 1:
+            time.sleep(delay_seconds)
 
     return {
         "total_claims_evaluated": len(results),
         "llm_enabled": use_llm,
+        "save_output": save_output,
+        "delay_seconds": delay_seconds if use_llm else 0,
         "results": results,
     }
 
@@ -400,9 +511,20 @@ def simple_ui() -> str:
                 background: #1d4ed8;
             }
 
+            button:disabled {
+                cursor: not-allowed;
+                background: #9ca3af;
+            }
+
             .small {
                 color: #4b5563;
                 font-size: 14px;
+            }
+
+            .saved-path {
+                margin-top: 12px;
+                color: #15803d;
+                font-weight: 700;
             }
 
             .card {
@@ -655,7 +777,7 @@ def simple_ui() -> str:
                 <option value="CLM-006" selected>CLM-006 - Shivaji Chatterjee</option>
             </select>
 
-            <button onclick="evaluateClaim()">Evaluate Claim</button>
+            <button id="evaluateButton" onclick="evaluateClaim()">Evaluate Claim</button>
 
             <p class="small">
                 Swagger API docs are available at <a href="/docs" target="_blank">/docs</a>.
@@ -693,7 +815,7 @@ def simple_ui() -> str:
                     "Gemini is mapping expenses to policy rules",
                     "Python is running deterministic checks and calculations",
                     "Gemini is generating the final reimbursement recommendation",
-                    "Preparing final result"
+                    "Saving JSON output and preparing final result"
                 ];
 
                 return `
@@ -801,14 +923,20 @@ def simple_ui() -> str:
             async function evaluateClaim() {
                 const claimId = document.getElementById("claimId").value;
                 const output = document.getElementById("output");
+                const evaluateButton = document.getElementById("evaluateButton");
 
                 const progressTimer = startProgress(output);
 
-                try {
-                    const response = await fetch(`/evaluate/${claimId}?use_llm=true&include_raw_llm=false`);
-                    const data = await response.json();
+                if (evaluateButton) {
+                    evaluateButton.disabled = true;
+                }
 
-                    clearInterval(progressTimer);
+                try {
+                    const response = await fetch(
+                        `/evaluate/${claimId}?use_llm=true&include_raw_llm=false&save_output=true`
+                    );
+
+                    const data = await response.json();
 
                     if (!response.ok) {
                         output.innerHTML = `<p style="color:red;">Error: ${escapeHtml(JSON.stringify(data))}</p>`;
@@ -858,6 +986,12 @@ def simple_ui() -> str:
                             <div class="recommendation">
                                 ${escapeHtml(ui.final_reimbursement_recommendation)}
                             </div>
+
+                            ${
+                                data.saved_output_path
+                                ? `<p class="saved-path">JSON saved to: ${escapeHtml(data.saved_output_path)}</p>`
+                                : ""
+                            }
 
                             <details>
                                 <summary>View Gemini Planning Details</summary>
@@ -916,8 +1050,13 @@ def simple_ui() -> str:
                         </div>
                     `;
                 } catch (error) {
-                    clearInterval(progressTimer);
                     output.innerHTML = `<p style="color:red;">Error: ${escapeHtml(error)}</p>`;
+                } finally {
+                    clearInterval(progressTimer);
+
+                    if (evaluateButton) {
+                        evaluateButton.disabled = false;
+                    }
                 }
             }
         </script>

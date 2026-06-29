@@ -337,24 +337,40 @@ def expense_eligibility_tool(
 
     match_map = _policy_match_map(policy_reasoning)
 
+    true_manual_review_signals = {
+        "manual_review",
+        "unclear",
+        "missing_information",
+        "conflicting_information",
+        "prior_approval_required",
+    }
+
     for expense in claim.expenses:
         category = _normalize(expense.category)
         match = match_map.get(expense.expense_id)
         policy_ids = _expense_policy_ids(policy_reasoning, expense.expense_id)
         policy_refs.extend(policy_ids)
 
-        if match and match.manual_review_required:
-            status = "manual_review"
-            reason = "Gemini policy reasoning marked this expense for Manual Review."
-            manual_review_reasons.append(f"{expense.expense_id}: {reason}")
-            reason_codes.append("POLICY_REASONING_MANUAL_REVIEW")
+        decision_signal = ""
+        if match:
+            decision_signal = _normalize(match.decision_signal)
 
-        elif "POL-004" in policy_ids or category in NON_REIMBURSABLE_CATEGORIES:
+        if "POL-004" in policy_ids or category in NON_REIMBURSABLE_CATEGORIES:
             status = "non_reimbursable"
             reason = "Expense is mapped to a non-reimbursable category."
             non_reimbursable_ids.append(expense.expense_id)
             reason_codes.append("NON_REIMBURSABLE_EXPENSE")
             policy_ids = _unique(policy_ids + ["POL-004"])
+
+        elif (
+            match
+            and match.manual_review_required
+            and decision_signal in true_manual_review_signals
+        ):
+            status = "manual_review"
+            reason = "Gemini policy reasoning marked this expense for Manual Review."
+            manual_review_reasons.append(f"{expense.expense_id}: {reason}")
+            reason_codes.append("POLICY_REASONING_MANUAL_REVIEW")
 
         elif "POL-003" in policy_ids or category in ELIGIBLE_CATEGORIES:
             status = "eligible"
@@ -495,6 +511,14 @@ def limit_checker_tool(
     reason_codes: List[str] = []
     policy_refs: List[str] = ["POL-011"]
 
+    true_manual_review_signals = {
+        "manual_review",
+        "unclear",
+        "missing_information",
+        "conflicting_information",
+        "prior_approval_required",
+    }
+
     for expense in claim.expenses:
         category = _normalize(expense.category)
         submitted = float(expense.amount)
@@ -507,19 +531,11 @@ def limit_checker_tool(
         match = match_map.get(expense.expense_id)
         conflict = _policy_limit_conflict(claim, refs)
 
-        if match and match.manual_review_required:
-            status = "manual_review"
-            reason = "Gemini policy reasoning marked this expense for Manual Review."
-            manual_review_reasons.append(f"{expense.expense_id}: {reason}")
-            reason_codes.append("POLICY_REASONING_MANUAL_REVIEW")
+        decision_signal = ""
+        if match:
+            decision_signal = _normalize(match.decision_signal)
 
-        elif conflict:
-            status = "manual_review"
-            reason = conflict
-            manual_review_reasons.append(f"{expense.expense_id}: {reason}")
-            reason_codes.append("POLICY_REASONING_LIMIT_CONFLICT")
-
-        elif expense.expense_id in duplicate_expense_ids:
+        if expense.expense_id in duplicate_expense_ids:
             status = "rejected"
             rejected = submitted
             reason = "Expense is a duplicate of an earlier submitted expense."
@@ -532,6 +548,22 @@ def limit_checker_tool(
             reason = "Expense category is non-reimbursable under policy."
             refs.append("POL-004")
             reason_codes.append("NON_REIMBURSABLE_EXPENSE")
+
+        elif (
+            match
+            and match.manual_review_required
+            and decision_signal in true_manual_review_signals
+        ):
+            status = "manual_review"
+            reason = "Gemini policy reasoning marked this expense for Manual Review."
+            manual_review_reasons.append(f"{expense.expense_id}: {reason}")
+            reason_codes.append("POLICY_REASONING_MANUAL_REVIEW")
+
+        elif conflict:
+            status = "manual_review"
+            reason = conflict
+            manual_review_reasons.append(f"{expense.expense_id}: {reason}")
+            reason_codes.append("POLICY_REASONING_LIMIT_CONFLICT")
 
         elif category not in limits:
             status = "manual_review"

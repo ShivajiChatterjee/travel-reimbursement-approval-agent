@@ -23,7 +23,7 @@ class ToolExecutor:
     """
     Executes deterministic reimbursement tools in validated order.
 
-    New architecture role:
+    Architecture role:
     - Gemini performs policy reasoning before this step.
     - Python executes deterministic tools and calculations in this step.
     - The tool output includes both Gemini policy reasoning and Python tool results.
@@ -210,11 +210,9 @@ class ToolExecutor:
         Calls a tool safely.
 
         Some tools currently do not accept policy_reasoning.
-        Later, when tools.py is updated, tools can accept policy_reasoning directly.
-
         This helper keeps the executor compatible with both:
         - old tool signatures
-        - new policy-reasoning-aware tool signatures
+        - policy-reasoning-aware tool signatures
         """
 
         signature = inspect.signature(tool_function)
@@ -230,8 +228,6 @@ class ToolExecutor:
     ) -> List[str]:
         """
         Extracts policy IDs selected by Gemini during policy reasoning.
-        These are added to policy_references so the final Gemini validator
-        can see both LLM-selected policies and Python tool references.
         """
 
         if policy_reasoning is None:
@@ -251,10 +247,14 @@ class ToolExecutor:
         policy_reasoning: Optional[PolicyReasoningResponse],
     ) -> List[str]:
         """
-        Converts Gemini policy reasoning risks into manual review signals.
+        Extracts true manual review reasons from Gemini policy reasoning.
 
-        If Gemini identifies missing/conflicting policy information or marks
-        an expense for manual review, this information is carried forward.
+        Important:
+        - Duplicate suspicion from Gemini should not automatically become Manual Review.
+        - Duplicate claims are handled deterministically by duplicate_claim_detector_tool.
+        - Non-reimbursable expenses are rejected by Python tools.
+        - Limit-exceeded expenses are partially approved/rejected by Python tools.
+        - Manual Review is only for missing, unclear, conflicting, or exception-based information.
         """
 
         if policy_reasoning is None:
@@ -262,22 +262,40 @@ class ToolExecutor:
 
         manual_review_reasons: List[str] = []
 
-        manual_review_reasons.extend(
-            policy_reasoning.missing_or_conflicting_info
-        )
+        true_manual_review_signals = {
+            "manual_review",
+            "unclear",
+            "missing_information",
+            "conflicting_information",
+            "prior_approval_required",
+        }
+
+        has_true_manual_review_expense = False
 
         for match in policy_reasoning.expense_policy_matches:
-            if match.manual_review_required:
+            decision_signal = str(match.decision_signal or "").lower().strip()
+
+            if (
+                match.manual_review_required
+                and decision_signal in true_manual_review_signals
+            ):
+                has_true_manual_review_expense = True
+
                 manual_review_reasons.append(
                     f"{match.expense_id}: Gemini policy reasoning marked this "
                     "expense for Manual Review."
                 )
 
-            for flag in match.risk_flags:
-                if flag:
-                    manual_review_reasons.append(
-                        f"{match.expense_id}: policy reasoning risk flag - {flag}"
-                    )
+                for flag in match.risk_flags:
+                    if flag:
+                        manual_review_reasons.append(
+                            f"{match.expense_id}: policy reasoning manual review - {flag}"
+                        )
+
+        if has_true_manual_review_expense:
+            manual_review_reasons.extend(
+                policy_reasoning.missing_or_conflicting_info
+            )
 
         return self._unique(manual_review_reasons)
 
